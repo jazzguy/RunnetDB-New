@@ -1,0 +1,52 @@
+body{
+    background:rgb(236, 236, 236);
+    font-family:tahoma;
+}
+h3{
+    font-size: 35px;
+    color: white;
+    font-weight: 300;
+    font-weight: 30;
+    text-shadow: 2px 2px rgb(196, 196, 196);
+}
+#logo{
+    margin-top: 50px;
+    margin-left: 88px;
+}
+hr{
+
+    border-color: black;
+    border-color: white;
+    margin-top: 52px;
+
+}
+.thankyou{
+
+    width: 300px;
+    height: 350px;
+    background: white;
+    border: 1px solid rgb(213, 213, 213);
+    box-shadow: 0px 0px 1px 1px rgb(224, 224, 224);
+    border-radius: 2px;
+    margin-top: 31px;
+    margin-left: 39px;
+
+}
+h4{
+    font-size: 14px;
+    color: rgb(92, 92, 92);
+    color: w;
+    margin-left: 21px;
+    font-weight: 300;
+}
+p{
+
+    font-size: 12px;
+    color: rgb(92, 92, 92);
+    margin-left: 21px;
+
+}
+form > input {
+    height: 33px;
+    width: 301px;
+}

@@ -1,0 +1,80 @@
+body{
+    background:linear-gradient(rgb(244, 244, 244),rgb(228, 228, 228));
+}
+
+#runnetdbpanel{
+    background: #0083AE;
+    border-right: 6px solid #007DA8;
+}
+#welcome{
+    width: 800;
+    margin: auto;
+}
+#infoRunnet{
+    margin-left: 283px;
+    width: 300px;
+    margin-top: 9px;
+}
+#infoAboutContent{
+    font-size:13px;
+}
+#pics{
+    width: 490px;
+    float: right;
+    margin-right: 283px;
+    margin-top: -283px;
+    height: 385px;
+}
+#pic1{
+    width: 432px;
+    margin-left: 3px;
+    margin-top: -6px;
+}
+.pageWrapper{
+    width: 1366px;
+    margin: 0 auto;
+}
+#copyright{
+    width: 300px;
+    height: 50px;
+    margin-left: 283px;
+    margin-top: -13px;
+}
+#errorLogin{
+    width: 600px;
+    margin: auto;
+}
+#wayone{
+    width: 500px;
+    margin: auto;
+}
+#showLogin{
+    width: 600px;
+    margin: auto;
+    margin-top: 367px;
+
+}
+#databases{
+    width: 301px;
+    margin-left: 71px;
+    margin-top: 60px;
+
+}
+table tr:nth-child(odd) td{
+    background:white;
+}
+table tr:nth-child(even) td{
+    background:rgb(249, 249, 249);
+}
+#tablesInDb{
+    width: 800px;
+    background: rgb(242, 242, 242);
+    border: 1px solid rgb(207, 207, 207);
+    float: right;
+    margin-top: -160px;
+    margin-right: 117px;
+}
+#newTable{
+    margin-top: -213px;
+    margin-left: 530px;
+}
