@@ -527,28 +527,3 @@ class RunnetDB{
 
 
 
-
-
-$RunnetDB = new RunnetDB();
-
-
-
-
-$RunnetDB->where(["kolumn2"],["sup bro hows it going"]);
-$RunnetDB->prepareSelect("lol123");
-
-if($RunnetDB->result()){
-
-    echo 'ja det finns!<br><br><br><br>';
-
-    foreach($RunnetDB->getResult() as $column => $value){
-        echo 'hans namn &auml;r: ' . $value["kolumn"] . '<br>';
-        echo 'och hans efternamn &auml;r: ' . $value["kolumn2"] . '<br>';
-    }
-
-
-}else{
-    die("nej :( det finns inte");
-}
-
-
