@@ -28,14 +28,23 @@ class RunnetDB{
     private $_useWhere = [];
     private $_toUpdate;
     private $_connection = false;
+    private $_dbuserhandlerPath = [];
+    private $_limit = [];
 
 
     public function __construct(){
+
+        include 'configs.php';
+
+        $this->_dbuserhandlerPath = $config;
+
         define('ROOT_PATH', __DIR__);
         $this->_runnetDBUsers = $this->getDatabaseUsers();
 
-        define("JSONPATH", "dbuserhandler/" . $this->_runnetDBUsers->{"database"} . "/");
+        define("JSONPATH", $this->_dbuserhandlerPath["pathToDbuserhandler"] . $this->_runnetDBUsers["database"] . "/");
         define("JSON", ".json");
+
+
 
     }
     /*
@@ -54,12 +63,12 @@ class RunnetDB{
             $this->isTrue("password", $password);
             $this->isTrue("database", $database);
 
-            $this->_connection === true;
+            $this->_connection = true;
 
     }
 
     public function checkConnection(){
-        return $this->_connection;
+        return $this->_connection === false;
     }
 
 
@@ -82,8 +91,6 @@ class RunnetDB{
     }
 
 
-
-
     public function failed($msg){
         die($msg);
     }
@@ -104,13 +111,15 @@ class RunnetDB{
      */
 
     public function isTrue($key, $value){
-        $this->_runnetDBUsers->{$key} == $value ? true : die("RunnetDB:: Failed to connect. Check the configs!");
+
+        return $this->_runnetDBUsers[$key] == $value ? true : die("RunnetDB : Could not connect, wrong in the configs");
+
     }
 
 
     public function getDatabaseUsers(){
-        $getDatabaseUsersFile = file_get_contents(ROOT_PATH . "/dbuserhandler/.databaseusers.json");
-        return json_decode($getDatabaseUsersFile);
+        $getDatabaseUsersFile = file_get_contents($this->_dbuserhandlerPath["pathToDbuserhandler"] . ".databaseusers.json");
+        return json_decode($getDatabaseUsersFile, true);
 
     }
 
@@ -120,11 +129,11 @@ class RunnetDB{
 
     public function createDatabase(){
 
-        if(!file_exists("dbuserhandler/" . $this->_runnetDBUsers->{"database"})){
+        if(!file_exists($this->_dbuserhandlerPath["pathToDbuserhandler"] . $this->_runnetDBUsers["database"])){
 
-            mkdir("dbuserhandler/" . $this->_runnetDBUsers->{"database"});
+            mkdir($this->_dbuserhandlerPath["pathToDbuserhandler"] . $this->_runnetDBUsers["database"]);
 
-            $file = fopen("dbuserhandler/" . $this->_runnetDBUsers->{"database"} . "/.htaccess", 'w');
+            $file = fopen($this->_dbuserhandlerPath["pathToDbuserhandler"] . $this->_runnetDBUsers["database"] . "/.htaccess", 'w');
             fwrite($file, "Deny from all");
             fclose($file);
 
@@ -135,20 +144,20 @@ class RunnetDB{
 
     public function getDatabase(){
 
-        $folders = glob('../dbuserhandler/*' , GLOB_ONLYDIR);
+        $folders = glob($this->_dbuserhandlerPath["pathToDbuserhandler"] . '/*' , GLOB_ONLYDIR);
         return $folders;
 
     }
 
     public function getDatabaseTables($db){
 
-        $folders = glob('../dbuserhandler/' . $db . '/*' , GLOB_ONLYDIR);
+        $folders = glob($this->_dbuserhandlerPath["pathToDbuserhandler"] . $db . '/*' , GLOB_ONLYDIR);
         return $folders;
 
     }
 
     public function getDatabaseTablesColumn($db, $table){
-        $getJSONColumns = file_get_contents('../dbuserhandler/' . $db . '/' . $table . '/' . $table . '.table.json');
+        $getJSONColumns = file_get_contents($this->_dbuserhandlerPath["pathToDbuserhandler"] . $db . '/' . $table . '/' . $table . '.table.json');
         $decodeColumns = json_decode($getJSONColumns, true);
         return $decodeColumns;
 
@@ -157,7 +166,7 @@ class RunnetDB{
 
     public function getDatabaseTablesRows($db, $table){
 
-        $getJSONValues = file_get_contents('../dbuserhandler/' . $db . '/' . $table . '/' . $table . '.value.json');
+        $getJSONValues = file_get_contents($this->_dbuserhandlerPath["pathToDbuserhandler"] . $db . '/' . $table . '/' . $table . '.value.json');
         $decodeValues = json_decode($getJSONValues, true);
         return $decodeValues;
 
@@ -195,11 +204,13 @@ class RunnetDB{
 
     public function deleteTable($tableName){
 
-        if(file_exists("dbuserhandler/" . $this->_runnetDBUsers->{"database"} . "/" . $tableName)){
-            $open = fopen("dbuserhandler/" . $this->_runnetDBUsers->{"database"} . "/" . $tableName . "/" . $tableName . ".table.json", "w");
+        $tablePath = $this->_dbuserhandlerPath["pathToDbuserhandler"] . $this->_runnetDBUsers["database"] . "/" . $tableName;
+
+        if(file_exists($tablePath)){
+            $open = fopen($tablePath . "/" . $tableName . ".table.json", "w");
             fclose($open);
-            unlink("dbuserhandler/" . $this->_runnetDBUsers->{"database"} . "/" . $tableName . "/" . $tableName . ".table.json");
-            rmdir("dbuserhandler/" . $this->_runnetDBUsers->{"database"} . "/" . $tableName);
+            unlink($tablePath . $tableName . ".table.json");
+            rmdir($tablePath);
 
         }else{
             $this->failed("The table you're trying to delete, does not exist");
@@ -236,7 +247,7 @@ class RunnetDB{
                     $combine[] = array_combine($decodeColumnContent, $newValuesAgain);
                     $encodeValues = json_encode($combine);
 
-                    file_put_contents("dbuserhandler/" . $this->_runnetDBUsers->{"database"} . "/" . $tableName . "/" . $tableName . ".value.json", $encodeValues);
+                    file_put_contents($this->_dbuserhandlerPath["pathToDbuserhandler"] . $this->_runnetDBUsers["database"] . "/" . $tableName . "/" . $tableName . ".value.json", $encodeValues);
                     return false;
 
                 }else{
@@ -250,7 +261,7 @@ class RunnetDB{
 
                     $encodeMergeValues = json_encode($mergeNewValuesAndDecodeValues);
 
-                    file_put_contents("dbuserhandler/" . $this->_runnetDBUsers->{"database"} . "/" . $tableName . "/" . $tableName . ".value.json", $encodeMergeValues);
+                    file_put_contents($this->_dbuserhandlerPath["pathToDbuserhandler"] . $this->_runnetDBUsers["database"] . "/" . $tableName . "/" . $tableName . ".value.json", $encodeMergeValues);
 
 
                 }
@@ -323,7 +334,7 @@ class RunnetDB{
 
 
 
-
+    return $this;
 
 
     }
@@ -358,7 +369,7 @@ class RunnetDB{
 
         $file = $this->filePath($tableName, "value");
         $this->_deleteJSONValuesLINK = $file;
-        $getJSONValues = $this->getJSON($file);
+        $getJSONValues = $this->getJSON($file, true);
         $this->_deleteJSONValues = $getJSONValues;
 
         return $this;
@@ -412,9 +423,7 @@ class RunnetDB{
 
         }
 
-
-
-
+         return $this;
 
     }
 
@@ -473,6 +482,8 @@ class RunnetDB{
 
         }
 
+        return $this;
+
 
     }
 
@@ -480,22 +491,25 @@ class RunnetDB{
         if(array_count_values($columns) && array_count_values($values)){
             $this->_toUpdate = array_combine($columns, $values);
         }
+
     }
 
 
-    # ur funktion! #
-    public function limit($amount, $value){
 
+    public function limit($amount){
 
-        for($this->_i=$amount;$this->_i<count($this->getCombinedValues); $this->_i++){
+        //self::dump($this->_whereValues);
+        $p = 0;
+        while($p < $amount){
 
-            $newValues[$this->_i] = $this->getCombinedValues[$this->_i];
-            $this->_newCombinedValues = $newValues;
-            return $this->_newCombinedValues[$this->_i];
+            $this->_limit[$p] = $this->_whereValues[$p];
+
+            $p++;
+
         }
-        self::dump($this->_newCombinedValues);
 
-
+        $this->_whereValues = $this->_limit;
+        return $this;
 
     }
 
@@ -510,10 +524,21 @@ class RunnetDB{
         if(array_count_values($column) && array_count_values($value)){
             $this->_useWhere = array_combine($column, $value);
         }
+        return $this;
 
     }
 
+    public function sortBy($type){
 
+        if($type == "desc" || $type  == "asc"){
+            $type == "asc" ? array_multisort($this->_whereValues, SORT_ASC) : array_multisort($this->_whereValues, SORT_DESC);
+        }else{
+            die("sortBy : You can only use desc or asc");
+        }
+        return $this;
+
+
+    }
 
     public static function dump($code){
         echo '<pre>';
@@ -523,7 +548,4 @@ class RunnetDB{
 
 
 } // slut på classen
-
-
-
 
